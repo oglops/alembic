@@ -23,14 +23,9 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
 	set arch=Win32
 )
 
-REM ***************************************************************
-REM IlmBase SLN & VCPROJ files *must* be modified for static libs
-REM ***************************************************************
+set srcRoot=%ALEMBIC_ROOT%\contrib\%OPENEXR_VER%
 
-set srcRoot=%ALEMBIC_ROOT%\contrib\%ILMBASE_VER%
-
-
-@echo off
+@echo on
 
 pushd %srcRoot%
 IF exist build (
@@ -38,8 +33,9 @@ IF exist build (
 )
 md build & cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -G "Visual Studio 11 Win64" ..
-
-msbuild   ilmbase.sln /p:Configuration=Release;Platform=x64 /m
-msbuild   INSTALL.vcxproj  /p:Configuration=Release
+:: need to have zlib and half.dll
+set "PATH=%ALEMBIC_OUT%\%ILMBASE_VER%\lib;%PATH%"
+cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%OPENEXR_VER%  -G "Visual Studio 11 Win64" -DZLIB_ROOT=%ALEMBIC_OUT%\%ZLIB_VER% -DILMBASE_PACKAGE_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% ..
+msbuild   %srcRoot%\build\zlib.sln /p:Configuration=Release;Platform=x64 /m
+msbuild   %srcRoot%\build\INSTALL.vcxproj /p:Configuration=Release;Platform=x64
 
