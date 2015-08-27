@@ -1,0 +1,6 @@
+[submodule "contrib/IlmBase-2.2.0"]
+	path = contrib/IlmBase-2.2.0
+	url = git@github.com:oglops/IlmBase.git
+[submodule "contrib/OpenEXR-2.2.0"]
+	path = contrib/OpenEXR-2.2.0
+	url = git@github.com:oglops/openexr.git
