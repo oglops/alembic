@@ -32,7 +32,7 @@ set srcDir=%srcRoot%
 ::if NOT exist "%IncDir%"		md %IncDir%
 ::if NOT exist "%outLib%"		md %outLib%
 
-@echo off
+@echo on
 echo srcDir %srcDir%
 echo ALEMBIC_ROOT %ALEMBIC_ROOT%
 echo srcRoot %srcRoot%
@@ -43,8 +43,8 @@ IF exist build (
 ) 
 
 md build & cd build
-cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ZLIB_VER% -G "Visual Studio 11 Win64" ..
+cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ZLIB_VER% -G %BUILD_GENERATOR% ..
 
-msbuild   %srcDir%\build\zlib.sln /p:Configuration=Release;Platform=x64 /m 
-msbuild INSTALL.vcxproj /p:Configuration=Release;Platform=x64
+msbuild   %srcDir%\build\zlib.sln /p:Configuration=Release;Platform=%ARCH% /m 
+msbuild INSTALL.vcxproj /p:Configuration=Release;Platform=%ARCH%
 

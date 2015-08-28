@@ -42,3 +42,8 @@ IF (PYILMBASE_FOUND)
 ELSE()
     SET(ALEMBIC_PYILMBASE_FOUND 0 CACHE STRING "Set to 1 if PyIlmBase is found, 0 otherwise")
 ENDIF()
+
+
+message("========================= in AlembicPyIlmBase.cmake =========================")
+message("ALEMBIC_PYILMBASE_INCLUDE_DIRECTORY:${ALEMBIC_PYILMBASE_INCLUDE_DIRECTORY}")
+message("ALEMBIC_PYILMBASE_FOUND:${ALEMBIC_PYILMBASE_FOUND}")

@@ -36,12 +36,13 @@ IF exist build (
 )
 md build & cd build
 
+@echo on
 ::set BOOST_LIBRARYDIR
-set BOOST_LIBRARYDIR=%ALEMBIC_OUT%\%BOOST_VER%\%BOOST_LIB_VER%
+set BOOST_LIBRARYDIR=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%
 
 :: need boost lib and unistd.h
-cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%PYILMBASE_VER%  -G "Visual Studio 11 Win64" -DILMBASE_PACKAGE_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -DCMAKE_INCLUDE_PATH:STRING=%ALEMBIC_OUT%\%BOOST_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\include;%ALEMBIC_OUT%\extra\include -DCMAKE_LIBRARY_PATH:STRING=%ALEMBIC_OUT%\%BOOST_VER%\%BOOST_LIB_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\lib;%PYTHON_ROOT%\libs;%ALEMBIC_OUT%\extra\lib ..
+cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%PYILMBASE_VER%  -G %BUILD_GENERATOR% -DILMBASE_PACKAGE_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -DCMAKE_INCLUDE_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\include;%LOCAL_ROOT%\extra\include -DCMAKE_LIBRARY_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\lib;%PYTHON_ROOT%\libs;%LOCAL_ROOT%\extra\lib ..
 
-msbuild %srcRoot%\build\pyilmbase.sln /t:Rebuild /p:Configuration=Release;Platform=x64
-msbuild   %srcRoot%\build\INSTALL.vcxproj /p:Configuration=Release;Platform=x64
+msbuild %srcRoot%\build\pyilmbase.sln /t:Rebuild /p:Configuration=Release;Platform=%ARCH%
+::msbuild   %srcRoot%\build\INSTALL.vcxproj /p:Configuration=Release;Platform=%ARCH%
 

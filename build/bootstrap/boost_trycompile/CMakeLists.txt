@@ -1,3 +1,4 @@
+
 ##-*****************************************************************************
 ##
 ## Copyright (c) 2009-2011,
@@ -79,7 +80,6 @@ IF(DEFINED Boost_THREAD_LIBRARY)
     MESSAGE(STATUS "Using Boost_THREAD_LIBRARY: ${Boost_THREAD_LIBRARY}" )
 ENDIF()
 
-
 MESSAGE( STATUS "COMPILING BOOST TRY COMPILE EXECUTABLE IN ${PROJECT_BINARY_DIR}.")
 
 # Added -lm to the front to work around a bug in CMake TRY_RUN that doesn't
@@ -90,12 +90,20 @@ ELSE()
     SET(TRYCOMPILE_LIBS "${Boost_THREAD_LIBRARY}")
 ENDIF()
 
+message("========================= in boost_trycompile/CMakeLists.txt =========================")
+message("TRYCOMPILE_LIBS:${TRYCOMPILE_LIBS}")
+message("Boost_THREAD_LIBRARY:${Boost_THREAD_LIBRARY}")
+
+include_directories( "c:/localx/extra/include" )
+#link_directories( "c:/localx/extra/lib" )
+
+
 SET(USING_THESE_LIBS "-DLINK_LIBRARIES:INTERNAL=${TRYCOMPILE_LIBS}")
 
 TRY_RUN(BOOST_RUN_RESULT BOOST_COMPILE_RESULT
   ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/boost_trycompile.cpp
-  CMAKE_FLAGS ${USING_THESE_LIBS}
-  COMPILE_DEFINITIONS "-I${BOOST_INCLUDEDIR}"
+  CMAKE_FLAGS ${USING_THESE_LIBS} 
+  COMPILE_DEFINITIONS "-I${BOOST_INCLUDEDIR}" "-Ic:/localx/extra/include"
   COMPILE_OUTPUT_VARIABLE BOOST_COMPILE_OUTPUT
   RUN_OUTPUT_VARIABLE BOOST_RUN_OUTPUT
   )

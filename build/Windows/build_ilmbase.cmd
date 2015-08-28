@@ -38,8 +38,8 @@ IF exist build (
 )
 md build & cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -G "Visual Studio 11 Win64" ..
+cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -G %BUILD_GENERATOR% ..
 
-msbuild   ilmbase.sln /p:Configuration=Release;Platform=x64 /m
-msbuild   INSTALL.vcxproj  /p:Configuration=Release
+msbuild   ilmbase.sln /p:Configuration=Release;Platform=%ARCH% /m
+msbuild   INSTALL.vcxproj  /p:Configuration=Release;Platform=%ARCH%
 

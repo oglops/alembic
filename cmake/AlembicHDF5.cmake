@@ -43,6 +43,10 @@
 #-******************************************************************************
 # FindHDF5 uses these as hints about search locations
 #-******************************************************************************
+message("========================= in AlembicHDF5.cmake =========================")
+file(TO_CMAKE_PATH "$ENV{LOCAL_ROOT}" LOCAL_ROOT_CMAKE)
+set (HDF5_ROOT "${LOCAL_ROOT_CMAKE}/$ENV{HDF_VER}")
+# set(ENV{HDF5_DIR} "${HDF5_ROOT}/cmake/hdf5")
 
 IF (DEFINED HDF5_ROOT)
     MESSAGE(STATUS "Using HDF5_ROOT: ${HDF5_ROOT}")
@@ -65,8 +69,24 @@ FIND_PACKAGE(HDF5 COMPONENTS C HL)
 IF (HDF5_FOUND)
     SET(ALEMBIC_HDF5_LIB ${HDF5_C_LIBRARIES})
     SET(ALEMBIC_HDF5_HL_LIB ${HDF5_CXX_LIBRARIES})
+
+    # windows returns dll? 
+    list(GET HDF5_LIBRARIES 0 ALEMBIC_HDF5_LIB )
+    list(GET HDF5_LIBRARIES 1 ALEMBIC_HDF5_HL_LIB)   
+    STRING(REGEX REPLACE "bin/hdf5.dll" "lib/hdf5.lib"  ALEMBIC_HDF5_LIB  ${ALEMBIC_HDF5_LIB} )
+    STRING(REGEX REPLACE "bin/hdf5_hl.dll" "lib/hdf5_hl.lib"  ALEMBIC_HDF5_HL_LIB ${ALEMBIC_HDF5_HL_LIB})
+    set(ALEMBIC_HDF5_LIBS ${ALEMBIC_HDF5_LIB} ${ALEMBIC_HDF5_HL_LIB})
+    set(HDF5_LIBRARIES ${ALEMBIC_HDF5_LIBS} )
+
     MESSAGE(STATUS "HDF5_INCLUDE_DIRS: ${HDF5_INCLUDE_DIRS}")
     MESSAGE(STATUS "HDF5_LIBRARIES: ${HDF5_LIBRARIES}")
 ELSE()
     MESSAGE(STATUS "HDF5 not found.")
 ENDIF()
+
+
+message("HDF5_CXX_LIBRARIES:${HDF5_CXX_LIBRARIES}")
+message("HDF5_C_LIBRARIES:${HDF5_C_LIBRARIES}")
+message("HDF5_ROOT:${HDF5_ROOT}")
+#message("LOCAL_ROOT:${LOCAL_ROOT}")
+#message("HDF_VER:${HDF_VER}")

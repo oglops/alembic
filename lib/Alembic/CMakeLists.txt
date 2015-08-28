@@ -34,6 +34,9 @@
 ##
 ##-*****************************************************************************
 
+message("========================= in lib/Alembic/CmakeLists.txt =========================")
+
+
 ADD_SUBDIRECTORY(Util)
 ADD_SUBDIRECTORY(AbcCoreAbstract)
 ADD_SUBDIRECTORY(AbcCoreOgawa)
@@ -55,6 +58,13 @@ IF (ALEMBIC_SHARED_LIBS)
   SET_TARGET_PROPERTIES(Alembic PROPERTIES DEFINE_SYMBOL ALEMBIC_EXPORTS)
 ENDIF()
 
+message("ALEMBIC_SHARED_LIBS:${ALEMBIC_SHARED_LIBS}")
+message("LIB_TYPE:${LIB_TYPE}")
+message("CMAKE_SOURCE_DIR:${CMAKE_SOURCE_DIR}")
+message("PROJECT_BINARY_DIR:${PROJECT_BINARY_DIR}")
+
+message("CXX_FILES:${CXX_FILES}")
+message("CORE_LIBS:${CORE_LIBS}")
 
 # fixes undefined symbols for x86_64
 IF (ALEMBIC_SHARED_LIBS AND DARWIN)

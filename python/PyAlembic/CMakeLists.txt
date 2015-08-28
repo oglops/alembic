@@ -36,6 +36,8 @@
 IF (NOT DEFINED LIBPYTHON_VERSION)
     IF (APPLE)
         SET(LIBPYTHON_VERSION 2.7)
+    ELSEIF (WIN32)
+        SET( LIBPYTHON_VERSION 27 )
     ELSE()
         SET(LIBPYTHON_VERSION 2.6)
     ENDIF()
@@ -63,9 +65,14 @@ IF (${CMAKE_HOST_UNIX})
         ENDIF()
     ENDIF()
 ELSE()
-    SET(LIBPYTHON_FILE "${LIBPYTHON}.dll")
+    #SET(LIBPYTHON_FILE "${LIBPYTHON}.dll")
+    set(LIBPYTHON_FILE "${LIBPYTHON}.lib")
     IF (${WINDOWS})
         SET(ALEMBIC_PYTHON_ROOT "C:/Python${LIBPYTHON_VERSION}/libs")
+        file(TO_CMAKE_PATH "$ENV{PYTHON_ROOT}" PYTHON_ROOT_CMAKE)
+        set(PYTHON_INCLUDE_DIR ${PYTHON_ROOT_CMAKE}/include)
+        
+
     ELSE()
         SET(ALEMBIC_PYTHON_ROOT NOTFOUND)
     ENDIF()
@@ -160,8 +167,19 @@ IF (Boost_PYTHON_LIBRARY AND ALEMBIC_PYTHON_LIBRARY)
                    ${ALEMBIC_PYILMBASE_PYIMATH_LIB}
     )
 
+    message("========================= in PyAlembic/CmakeLists.txt =========================")
+    message("PYTHON_INCLUDE_DIR:${PYTHON_INCLUDE_DIR}")
+    message("ALEMBIC_SOURCE_DIR:${ALEMBIC_SOURCE_DIR}")
+    message("ALEMBIC_PYILMBASE_PYIMATH_LIB:${ALEMBIC_PYILMBASE_PYIMATH_LIB}")
+
+
     INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_DIR}" "${ALEMBIC_SOURCE_DIR}/lib"
           "${ALEMBIC_SOURCE_DIR}/python/PyAlembic")
+
+    # add pyilmbase inlcude dir, python include dir
+    include_directories( "$ENV{LOCAL_ROOT}/$ENV{PYILMBASE_VER}/include/OpenEXR" 
+                        "$ENV{PYTHON_ROOT}/include"
+                        )
 
     ADD_LIBRARY(alembicmodule SHARED ${CPP_FILES})
 
@@ -169,6 +187,7 @@ IF (Boost_PYTHON_LIBRARY AND ALEMBIC_PYTHON_LIBRARY)
     SET_TARGET_PROPERTIES(alembicmodule PROPERTIES PREFIX "")
 
     INSTALL(TARGETS alembicmodule
+            ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib)
 
     IF (USE_TESTS)

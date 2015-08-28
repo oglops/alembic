@@ -97,6 +97,11 @@ FIND_PATH(ILMBASE_INCLUDE_DIR
     include/OpenEXR
 )
 
+message("========================= in findilmbase.cmake =========================")
+message("ALEMBIC_ILMBASE_ROOT:${ALEMBIC_ILMBASE_ROOT}")
+message("_ilmbase_SEARCH_DIRS:${_ilmbase_SEARCH_DIRS}")
+message("ILMBASE_INCLUDE_DIR:${ILMBASE_INCLUDE_DIR}")
+
 # If the headers were found, get the version from config file, if not already set.
 IF(ILMBASE_INCLUDE_DIR)
   SET(ALEMBIC_ILMBASE_INCLUDE_DIRECTORY ${ILMBASE_INCLUDE_DIR})
@@ -118,6 +123,8 @@ IF(ILMBASE_INCLUDE_DIR)
       MESSAGE(WARNING "Could not find \"OpenEXRConfig.h\" in \"${ILMBASE_INCLUDE_DIR}\"")
     ENDIF()
 
+
+
     IF(ILMBASE_BUILD_SPECIFICATION)
       MESSAGE(STATUS "${ILMBASE_BUILD_SPECIFICATION}")
       STRING(REGEX REPLACE ".*#define[ \t]+ILMBASE_VERSION_STRING[ \t]+\"([.0-9]+)\".*"
@@ -136,6 +143,9 @@ IF(ILMBASE_INCLUDE_DIR)
   STRING(REGEX REPLACE "([0-9]+)[.]([0-9]+).*" "\\1_\\2" _ilmbase_libs_ver ${ILMBASE_VERSION})
 ENDIF()
 
+message("_ilmbase_FIND_COMPONENTS:${_ilmbase_FIND_COMPONENTS}")
+message("_ilmbase_libs_ver:${_ilmbase_libs_ver}")
+message("_ilmbase_SEARCH_DIRS:${_ilmbase_SEARCH_DIRS}")
 
 SET(_ilmbase_LIBRARIES)
 FOREACH(COMPONENT ${_ilmbase_FIND_COMPONENTS})

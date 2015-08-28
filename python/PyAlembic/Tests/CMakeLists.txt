@@ -57,7 +57,31 @@ TARGET_LINK_LIBRARIES(PyAlembic_Test ${CORE_LIBS} ${ALEMBIC_PYILMBASE_LIBS})
 
 ADD_TEST(PyAlembic_Python_TEST PyAlembic_Test)
 
+message("========================= in PyAlembic/Tests/CmakeLists.txt =========================")
+message("Boost_PYTHON_LIBRARY:${Boost_PYTHON_LIBRARY}")
+
+set(found 0)
+FOREACH(LIB ${Boost_PYTHON_LIBRARY})
+    #message("checking ... ${LIB}")
+    if (${LIB} STREQUAL "optimized")
+        #message("found match ... ${LIB}")
+        set(found 1)
+        continue()
+    endif()
+    if (${found} EQUAL 1)
+        #message("found!!!:${LIB}")
+        set(Boost_PYTHON_LIBRARY ${LIB})
+        break()
+    endif()    
+ENDFOREACH()
+unset(found)
+message("Boost_PYTHON_LIBRARY:${Boost_PYTHON_LIBRARY}")
+#list(GET Boost_PYTHON_LIBRARY LIB_NUM Boost_PYTHON_LIBRARY )
+
+# :optimized;c:/localx/boost_1_55_0/lib64-msvc-11.0/libboost_python-vc110-mt-1_55.lib;debug;c:/localx/boost_1_55_0/lib64-msvc-11.0/libboost_python-vc110-mt-gd-1_55.lib
+
 GET_FILENAME_COMPONENT(BOOST_LIBRARY_DIR ${Boost_PYTHON_LIBRARY} PATH)
+message("BOOST_LIBRARY_DIR:${BOOST_LIBRARY_DIR}")
 GET_FILENAME_COMPONENT(ILMBASE_LIBRARY_DIR ${ALEMBIC_ILMBASE_IMATH_LIB} PATH)
 
 CONFIGURE_FILE(

@@ -251,6 +251,9 @@ def configureCMakeBoost(srcdir,
     libdir = None
     cmake_extra_args = ''
 
+    #cmake_extra_args += r" -D CMAKE_INCLUDE_PATH:STRING=c:\localx\extra\include "
+    #cmake_extra_args += r" -D CMAKE_LIBRARY_PATH:STRING=c:\localx\extra\lib "
+
     # boost include files
     if boost_include_dir is not None:
         cmake_extra_args += ' -D BOOST_INCLUDEDIR:PATH="%s"' % boost_include_dir
@@ -396,7 +399,7 @@ def configureCMakeIlmbase( cmake_args, useRoot = False ):
 
     srcdir = cmake_args[0]
 
-    libNames = ["Half", "Iex", "IlmThread", "Imath"]
+    libNames = ["Half", "Iex", "IlmThread", "Imath", "IexMath"]
 
     ilmbaseLibs = ""
     libdir, imathlib = Path( cmake_args[2] ).split()
@@ -404,15 +407,20 @@ def configureCMakeIlmbase( cmake_args, useRoot = False ):
     imathlib = str( imathlib )
 
     libext = getLibExtension( imathlib )
-    libPreludeIndex = imathlib.find( "Imath" )
-    libPrelude = imathlib[:libPreludeIndex]
+    libver = imathlib[len("Imath"):-len(libext)-1]
 
     for lib in libNames:
-        name = "%s%s.%s" % ( libPrelude, lib, libext )
+        name = "%s%s.%s" % ( lib, libver, libext )
         cmakeName = lib.upper()
         libpath = Path( libdir ).join( name )
         cmakeEntry = " -D ALEMBIC_ILMBASE_%s_LIB:FILEPATH=%s" % ( cmakeName, libpath )
         ilmbaseLibs += cmakeEntry
+
+
+    # deal with half.lib
+    lib=libNames[0]
+    name = "%s.%s" % ( lib, libext )
+    ilmbaseLibs += " -D ALEMBIC_ILMBASE_%s_LIB:FILEPATH=%s" % ( lib.upper(), Path( libdir ).join( name ) )
 
     try:
         cmake_extra_args += ' -D ALEMBIC_ILMBASE_INCLUDE_DIRECTORY:PATH="%s"' % cmake_args[1]
@@ -1079,6 +1087,8 @@ def configure_pyilmbase( options, srcdir, cmakecache ):
         pyilmbase_include_dir = str( find_pyilmbase_include( cmakecache ) )
 
     # pyimath lib
+    print("========================= in configure_pyilmbase =========================")
+    print 'options.pyilmbase_pyimath_library:',options.pyilmbase_pyimath_library
     if options.pyilmbase_pyimath_library:
         pyilmbase_pyimath_library = options.pyilmbase_pyimath_library
     else:
@@ -1267,7 +1277,7 @@ def runCMake( opts, srcdir, ranBootstrap = False ):
         # Run CMake twice to generate the correct build system files (this is an
         # undocumented feature of CMake)
         print "Executing CMake command: %s" % cmake_cmd
-        Popen( cmake_cmd, shell=True ).wait()
+        # Popen( cmake_cmd, shell=True ).wait()
         Popen( cmake_cmd, shell=True ).wait()
     else:
         # don't output anything; we're just running to get some values in the

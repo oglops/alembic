@@ -68,7 +68,7 @@ OPTION(USE_OPENGL "Include AbcOpenGL lib" OFF)
 OPTION(USE_PRMAN "Include PRMan stuff" OFF)
 OPTION(USE_PYALEMBIC "Include PyAlembic stuff" OFF)
 OPTION(USE_STATIC_BOOST "Build with static Boost libs" ON)
-OPTION(USE_STATIC_HDF5 "Build with static HDF5 libs" OFF)
+OPTION(USE_STATIC_HDF5 "Build with static HDF5 libs" ON)
 OPTION(USE_TESTS "Include Alembic tests" ON)
 OPTION(ALEMBIC_GLEW_LINK_STATIC "GLEW is a static library" OFF)
 OPTION(ALEMBIC_ILMBASE_LINK_STATIC "IlmBase is a static library" OFF)
@@ -213,6 +213,10 @@ ENDIF()
 #-******************************************************************************
 
 FIND_PACKAGE(Threads REQUIRED)
+
+# add pthread getopt unistd header files
+include_directories("$ENV{LOCAL_ROOT}/extra/include")
+link_directories("$ENV{LOCAL_ROOT}/extra/lib")
 
 # We only need boost if including PyAlembic, or using it in the lib
 IF (ALEMBIC_LIB_USES_BOOST OR USE_PYALEMBIC)

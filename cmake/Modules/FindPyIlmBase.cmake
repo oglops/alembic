@@ -33,6 +33,24 @@
 ##
 ##-*****************************************************************************
 
+
+
+# copied from ilmbase cmakelists
+# Allow the developer to select if Dynamic or Static libraries are built
+OPTION (NAMESPACE_VERSIONING "Namespace Versioning" ON)
+SET (ILMBASE_LIBSUFFIX "")
+IF (NAMESPACE_VERSIONING)
+  SET ( ILMBASE_LIBSUFFIX "-$ENV{ILMBASE_LIB_SUFFIX}" )
+ENDIF ()
+message("========================= in FindPyIlmBase.cmake =========================")
+
+#STRING(REGEX REPLACE "\\\\" "/" ALEMBIC_OUT_SLASH ${ALEMBIC_OUT})
+IF(WIN32)
+  file(TO_CMAKE_PATH "$ENV{ALEMBIC_OUT}/$ENV{PYILMBASE_VER}" PYILMBASE_ROOT)
+  set(ALEMBIC_PYILMBASE_MODULE_DIRECTORY "${PYILMBASE_ROOT}/python2.7/site-packages")
+ENDIF ()
+
+
 IF(DEFINED USE_PYALEMBIC AND NOT USE_PYALEMBIC)
     MESSAGE(STATUS "Skipping finding PyIlmBase and PyImath")
 ELSE()
@@ -49,7 +67,8 @@ ELSE()
         ELSE()
             IF (${WINDOWS})
               # TODO: set to 32-bit or 64-bit path
-              SET(ALEMBIC_PYILMBASE_ROOT "C:/Program Files (x86)/pyilmbase/")
+              #SET(ALEMBIC_PYILMBASE_ROOT "C:/Program Files (x86)/pyilmbase/")
+              set(ALEMBIC_PYILMBASE_ROOT "${PYILMBASE_ROOT}")
             ELSE()
               SET(ALEMBIC_PYILMBASE_ROOT NOTFOUND)
             ENDIF()
@@ -71,6 +90,9 @@ ELSE()
         /opt/lib
         /usr/freeware/lib64
    )
+    message("ALEMBIC_PYILMBASE_ROOT:${ALEMBIC_PYILMBASE_ROOT}")
+    message("ALEMBIC_PYILMBASE_MODULE_DIRECTORY:${ALEMBIC_PYILMBASE_MODULE_DIRECTORY}")
+    message("LIBRARY_PATHS:${LIBRARY_PATHS}")
 
     IF(DEFINED PYILMBASE_LIBRARY_DIR)
         SET(LIBRARY_PATHS ${PYILMBASE_LIBRARY_DIR} ${LIBRARY_PATHS})
@@ -114,6 +136,17 @@ ELSE()
     ENDIF()
 
     IF(NOT DEFINED ALEMBIC_PYILMBASE_PYIMATH_MODULE)
+      IF(WIN32)
+        FIND_LIBRARY(ALEMBIC_PYILMBASE_PYIMATH_MODULE imathmodule.lib
+                     PATHS
+                     ${LIBRARY_PATHS}
+                     NO_DEFAULT_PATH
+                     NO_CMAKE_ENVIRONMENT_PATH
+                     NO_CMAKE_PATH
+                     NO_SYSTEM_ENVIRONMENT_PATH
+                     NO_CMAKE_SYSTEM_PATH
+                     DOC "The PyImath library")
+      ELSE()
         FIND_LIBRARY(ALEMBIC_PYILMBASE_PYIMATH_MODULE imathmodule.so
                      PATHS
                      ${LIBRARY_PATHS}
@@ -123,6 +156,7 @@ ELSE()
                      NO_SYSTEM_ENVIRONMENT_PATH
                      NO_CMAKE_SYSTEM_PATH
                      DOC "The PyImath library")
+      ENDIF()
     ENDIF()
 
     SET(PYILMBASE_FOUND TRUE)
@@ -146,3 +180,7 @@ ELSE()
     )
 
 ENDIF()
+
+
+message("PYILMBASE_ROOT:${PYILMBASE_ROOT}")
+message("ALEMBIC_PYILMBASE_PYIMATH_LIB:${ALEMBIC_PYILMBASE_PYIMATH_LIB}")
