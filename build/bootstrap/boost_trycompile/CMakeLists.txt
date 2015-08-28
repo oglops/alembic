@@ -94,10 +94,6 @@ message("========================= in boost_trycompile/CMakeLists.txt ==========
 message("TRYCOMPILE_LIBS:${TRYCOMPILE_LIBS}")
 message("Boost_THREAD_LIBRARY:${Boost_THREAD_LIBRARY}")
 
-include_directories( ${CMAKE_INCLUDE_PATH} )
-link_directories( ${CMAKE_LIBRARY_PATH} )
-
-
 SET(USING_THESE_LIBS "-DLINK_LIBRARIES:INTERNAL=${TRYCOMPILE_LIBS}")
 
 TRY_RUN(BOOST_RUN_RESULT BOOST_COMPILE_RESULT
