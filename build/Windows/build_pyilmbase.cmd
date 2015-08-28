@@ -44,5 +44,5 @@ set BOOST_LIBRARYDIR=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%
 cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%PYILMBASE_VER%  -G %BUILD_GENERATOR% -DILMBASE_PACKAGE_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -DCMAKE_INCLUDE_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\include;%LOCAL_ROOT%\extra\include -DCMAKE_LIBRARY_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\lib;%PYTHON_ROOT%\libs;%LOCAL_ROOT%\extra\lib ..
 
 msbuild %srcRoot%\build\pyilmbase.sln /t:Rebuild /p:Configuration=Release;Platform=%ARCH%
-::msbuild   %srcRoot%\build\INSTALL.vcxproj /p:Configuration=Release;Platform=%ARCH%
+msbuild   %srcRoot%\build\INSTALL.vcxproj /p:Configuration=Release;Platform=%ARCH%
 

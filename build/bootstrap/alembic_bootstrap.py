@@ -251,8 +251,8 @@ def configureCMakeBoost(srcdir,
     libdir = None
     cmake_extra_args = ''
 
-    #cmake_extra_args += r" -D CMAKE_INCLUDE_PATH:STRING=c:\localx\extra\include "
-    #cmake_extra_args += r" -D CMAKE_LIBRARY_PATH:STRING=c:\localx\extra\lib "
+    cmake_extra_args += r' -D CMAKE_INCLUDE_PATH:STRING=c:\localx\extra\include '
+    cmake_extra_args += r' -D CMAKE_LIBRARY_PATH:STRING=c:\localx\extra\lib '
 
     # boost include files
     if boost_include_dir is not None:
@@ -284,13 +284,9 @@ def configureCMakeBoost(srcdir,
 
     # execute the cmake command
     cmake_status = Popen(cmake_cmd, shell=True, stdout=PIPE, stderr=PIPE)
-    status = cmake_status.wait()
-
-    for line in cmake_status.stdout.readlines():
-      print line.strip()
-
-    errors = ''.join(cmake_status.stderr.readlines())
-    print errors
+    out,errors = cmake_status.communicate()
+    status = cmake_status.returncode
+    print out
 
     return status, errors
 
@@ -315,14 +311,9 @@ def configureCMakeZlib( cmake_args ):
     print "Executing CMake Zlib trycompile command:\n%s" % cmake_cmd
 
     cmake_status = Popen( cmake_cmd, shell=True, stdout=PIPE, stderr=PIPE )
-    status = cmake_status.wait()
-
-    for line in cmake_status.stdout.readlines():
-      print line.strip()
-
-    errors = ''.join( cmake_status.stderr.readlines() )
-    print errors
-
+    out,errors = cmake_status.communicate()
+    status = cmake_status.returncode
+    print out
     return status, errors
 
 ##-*****************************************************************************
@@ -383,13 +374,9 @@ def configureCMakeHDF5( cmake_args ):
     print "Executing CMake HDF5 trycompile command:\n%s" % cmake_cmd
 
     cmake_status = Popen( cmake_cmd, shell=True, stdout=PIPE, stderr=PIPE )
-    status = cmake_status.wait()
-
-    for line in cmake_status.stdout.readlines():
-      print line.strip()
-
-    errors = ''.join( cmake_status.stderr.readlines() )
-    print errors
+    out,errors = cmake_status.communicate()
+    status = cmake_status.returncode
+    print out
 
     return status, errors
 
@@ -438,14 +425,9 @@ def configureCMakeIlmbase( cmake_args, useRoot = False ):
     print "Executing CMake Ilmbase trycompile command:\n%s" % cmake_cmd
 
     cmake_status = Popen( cmake_cmd, shell=True, stdout=PIPE, stderr=PIPE )
-    status = cmake_status.wait()
-
-    for line in cmake_status.stdout.readlines():
-      print line.strip()
-
-    errors = ''.join( cmake_status.stderr.readlines() )
-    print errors
-
+    out,errors = cmake_status.communicate()
+    status = cmake_status.returncode
+    print out
     return status, errors
 
 ##-*****************************************************************************
@@ -489,13 +471,9 @@ def configureCMakePyIlmbase( cmake_args, useRoot = False ):
     print "Executing CMake PyIlmbase trycompile command:\n%s" % cmake_cmd
 
     cmake_status = Popen( cmake_cmd, shell=True, stdout=PIPE, stderr=PIPE )
-    status = cmake_status.wait()
-
-    for line in cmake_status.stdout.readlines():
-      print line.strip()
-
-    errors = ''.join( cmake_status.stderr.readlines() )
-    print errors
+    out,errors = cmake_status.communicate()
+    status = cmake_status.returncode
+    print out
 
     return status, errors
 
@@ -1277,7 +1255,7 @@ def runCMake( opts, srcdir, ranBootstrap = False ):
         # Run CMake twice to generate the correct build system files (this is an
         # undocumented feature of CMake)
         print "Executing CMake command: %s" % cmake_cmd
-        # Popen( cmake_cmd, shell=True ).wait()
+        Popen( cmake_cmd, shell=True ).wait()
         Popen( cmake_cmd, shell=True ).wait()
     else:
         # don't output anything; we're just running to get some values in the

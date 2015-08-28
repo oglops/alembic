@@ -94,8 +94,8 @@ message("========================= in boost_trycompile/CMakeLists.txt ==========
 message("TRYCOMPILE_LIBS:${TRYCOMPILE_LIBS}")
 message("Boost_THREAD_LIBRARY:${Boost_THREAD_LIBRARY}")
 
-include_directories( "c:/localx/extra/include" )
-#link_directories( "c:/localx/extra/lib" )
+include_directories( ${CMAKE_INCLUDE_PATH} )
+link_directories( ${CMAKE_LIBRARY_PATH} )
 
 
 SET(USING_THESE_LIBS "-DLINK_LIBRARIES:INTERNAL=${TRYCOMPILE_LIBS}")
@@ -103,7 +103,7 @@ SET(USING_THESE_LIBS "-DLINK_LIBRARIES:INTERNAL=${TRYCOMPILE_LIBS}")
 TRY_RUN(BOOST_RUN_RESULT BOOST_COMPILE_RESULT
   ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/boost_trycompile.cpp
   CMAKE_FLAGS ${USING_THESE_LIBS} 
-  COMPILE_DEFINITIONS "-I${BOOST_INCLUDEDIR}" "-Ic:/localx/extra/include"
+  COMPILE_DEFINITIONS "-I${BOOST_INCLUDEDIR}"
   COMPILE_OUTPUT_VARIABLE BOOST_COMPILE_OUTPUT
   RUN_OUTPUT_VARIABLE BOOST_RUN_OUTPUT
   )
