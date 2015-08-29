@@ -59,6 +59,13 @@ ADD_TEST(PyAlembic_Python_TEST PyAlembic_Test)
 
 message("========================= in PyAlembic/Tests/CmakeLists.txt =========================")
 message("Boost_PYTHON_LIBRARY:${Boost_PYTHON_LIBRARY}")
+message("USE_STATIC_BOOST:${USE_STATIC_BOOST}")
+
+if (${USE_STATIC_BOOST})
+    # disable auto linking or boostxxxx.lib is needed
+    ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
+    message("added preprocessor BOOST_ALL_NO_LIB")
+endif()
 
 set(found 0)
 FOREACH(LIB ${Boost_PYTHON_LIBRARY})

@@ -4,6 +4,7 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <winsock.h>
+#pragma comment(lib, "Ws2_32.lib")
 #endif
 
 

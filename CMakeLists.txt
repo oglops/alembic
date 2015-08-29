@@ -66,15 +66,17 @@ OPTION(USE_HDF5 "Include HDF5 stuff" ON)
 OPTION(USE_MAYA "Include Maya stuff" OFF)
 OPTION(USE_OPENGL "Include AbcOpenGL lib" OFF)
 OPTION(USE_PRMAN "Include PRMan stuff" OFF)
-OPTION(USE_PYALEMBIC "Include PyAlembic stuff" OFF)
-OPTION(USE_STATIC_BOOST "Build with static Boost libs" ON)
+OPTION(USE_PYALEMBIC "Include PyAlembic stuff" ON)
+OPTION(USE_STATIC_BOOST "Build with static Boost libs" OFF)
 OPTION(USE_STATIC_HDF5 "Build with static HDF5 libs" ON)
 OPTION(USE_TESTS "Include Alembic tests" ON)
 OPTION(ALEMBIC_GLEW_LINK_STATIC "GLEW is a static library" OFF)
 OPTION(ALEMBIC_ILMBASE_LINK_STATIC "IlmBase is a static library" OFF)
 OPTION(ALEMBIC_SHARED_LIBS "Build shared libraries" ON)
+# if turn off this, boost/get_pointer.hpp(42): error C2995: 'T *boost::get_pointer(const std::shared_ptr<_Ty> &)' : function template has already been defined
+# check Foundation.h
 OPTION(ALEMBIC_LIB_USES_BOOST
-    "Main Alembic library uses boost for things like shared_ptr" OFF)
+    "Main Alembic library uses boost for things like shared_ptr" ON)
 OPTION(ALEMBIC_LIB_USES_TR1
     "Main Alembic library uses std::tr1 for things like shared_ptr" OFF)
 
@@ -111,17 +113,24 @@ IF ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     SET(LINUX TRUE)
 ENDIF()
 
+message("========================= in ./CMakeLists.txt =========================")
+
 IF (NOT ${ALEMBIC_LIB_USES_TR1} AND NOT ${ALEMBIC_LIB_USES_BOOST})
     # TODO figure out how to do this for Windows
     INCLUDE(CheckCXXCompilerFlag)
+    # this failed to work on windows for vs2012
     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
     CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-    IF (COMPILER_SUPPORTS_CXX1X)
+    IF (COMPILER_SUPPORTS_CXX11)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     ELSEIF (COMPILER_SUPPORTS_CXX0X)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    ELSE()
+        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
     ENDIF()
 ENDIF()
+
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # Set visibility for GNU compilers
 IF (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

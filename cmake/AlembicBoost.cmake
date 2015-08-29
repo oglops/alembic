@@ -69,10 +69,13 @@ ENDIF()
 #-******************************************************************************
 # Find static and multi-threaded versions only (1.42.0+)
 #-******************************************************************************
+message("========================= in AlembicBoost.cmake =========================")
 
 SET(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
 SET(Boost_USE_MULTITHREADED ON)
 SET(Boost_NO_BOOST_CMAKE ON) 
+
+message("Boost_USE_STATIC_LIBS:${Boost_USE_STATIC_LIBS}")
 
 IF (USE_PYALEMBIC)
     FIND_PACKAGE(Boost 1.42.0 COMPONENTS program_options python REQUIRED thread)
@@ -93,3 +96,6 @@ IF (Boost_FOUND)
 ELSE()
     MESSAGE(FATAL_ERROR "Boost not found.")
 ENDIF()
+
+
+message("Boost_USE_STATIC_LIBS:${Boost_USE_STATIC_LIBS}")
