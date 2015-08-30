@@ -23,8 +23,14 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
 	set arch=Win32
 )
 
-set buildArg="%config%|%arch%"
-set outDir=%ALEMBIC_OUT%\%SYS%
+::set buildArg="%config%|%arch%"
+::set outDir=%ALEMBIC_OUT%\%SYS%
+set srcRoot=%ALEMBIC_ROOT%\..\alembic_build
+set srcDir=%srcRoot%
 
 @echo on
-vcbuild /nologo %1 %2 %3 %4 %5 %6 %outDir%\Alembic.sln %buildArg%
+
+pushd %srcDir%
+
+msbuild   ALEMBIC.sln /p:Configuration=Release;Platform=%ARCH% /m 
+msbuild INSTALL.vcxproj /p:Configuration=Release;Platform=%ARCH%

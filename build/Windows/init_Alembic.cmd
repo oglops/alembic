@@ -36,7 +36,7 @@ set Luxology_flags=/MT /U
 REM ******************************************************************************************
 REM Corrections to vars in bootstrap script
 REM ******************************************************************************************
-set warnFlags=/wd4267 /wd4800 /wd4018 /wd4244  /wd4251 /wd4819 %Luxology_flags%
+set warnFlags=/W1 /wd4267 /wd4800 /wd4018 /wd4244  /wd4251 /wd4819 /wd4150 /wd4005 %Luxology_flags%
 set ccflags=%warnFlags% /D_WINDOWS /W3 /Zm1000
 set cppflags=%ccflags% /EHsc /GR
 

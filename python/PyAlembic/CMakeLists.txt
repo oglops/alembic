@@ -187,8 +187,12 @@ IF (Boost_PYTHON_LIBRARY AND ALEMBIC_PYTHON_LIBRARY)
     SET_TARGET_PROPERTIES(alembicmodule PROPERTIES PREFIX "")
 
     INSTALL(TARGETS alembicmodule
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib)
+           ARCHIVE DESTINATION lib
+           LIBRARY DESTINATION lib
+           RUNTIME DESTINATION lib
+           )
+           #DESTINATION lib)
+           # lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages )
 
     IF (USE_TESTS)
         ADD_SUBDIRECTORY(Tests)

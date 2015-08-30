@@ -71,7 +71,7 @@ OPTION(USE_STATIC_BOOST "Build with static Boost libs" OFF)
 OPTION(USE_STATIC_HDF5 "Build with static HDF5 libs" ON)
 OPTION(USE_TESTS "Include Alembic tests" ON)
 OPTION(ALEMBIC_GLEW_LINK_STATIC "GLEW is a static library" OFF)
-OPTION(ALEMBIC_ILMBASE_LINK_STATIC "IlmBase is a static library" OFF)
+OPTION(ALEMBIC_ILMBASE_LINK_STATIC "IlmBase is a static library" on)
 OPTION(ALEMBIC_SHARED_LIBS "Build shared libraries" ON)
 # if turn off this, boost/get_pointer.hpp(42): error C2995: 'T *boost::get_pointer(const std::shared_ptr<_Ty> &)' : function template has already been defined
 # check Foundation.h

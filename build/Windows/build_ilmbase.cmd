@@ -38,7 +38,7 @@ IF exist build (
 )
 md build & cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -G %BUILD_GENERATOR% ..
+cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -DBUILD_SHARED_LIBS=off -DDISABLE_WARNING="/W1 /wd4244 /wd4305 /wd4530" -G %BUILD_GENERATOR% ..
 
 msbuild   ilmbase.sln /p:Configuration=Release;Platform=%ARCH% /m
 msbuild   INSTALL.vcxproj  /p:Configuration=Release;Platform=%ARCH%

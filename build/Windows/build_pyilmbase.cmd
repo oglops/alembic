@@ -41,7 +41,10 @@ md build & cd build
 set BOOST_LIBRARYDIR=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%
 
 :: need boost lib and unistd.h
-cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%PYILMBASE_VER%  -G %BUILD_GENERATOR% -DILMBASE_PACKAGE_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -DCMAKE_INCLUDE_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\include;%LOCAL_ROOT%\extra\include -DCMAKE_LIBRARY_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\lib;%PYTHON_ROOT%\libs;%LOCAL_ROOT%\extra\lib ..
+cmake -DCMAKE_INSTALL_PREFIX=%ALEMBIC_OUT%\%PYILMBASE_VER%  -G %BUILD_GENERATOR% -DILMBASE_PACKAGE_PREFIX=%ALEMBIC_OUT%\%ILMBASE_VER% -DCMAKE_INCLUDE_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\include;%LOCAL_ROOT%\extra\include -DCMAKE_LIBRARY_PATH:STRING=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%;%PYTHON_ROOT%\Lib\site-packages\numpy\core\lib;%PYTHON_ROOT%\libs;%LOCAL_ROOT%\extra\lib -DDISABLE_WARNING="/W1 /wd4244 /wd4530 /wd4819 /wd4267 /wd4018 /wd4661" ..
+
+::-DCMAKE_CXX_FLAGS:STRING=" /wd4244 /wd4530 /wd4819 /wd4267 /wd4018 /wd4661 "
+::-DCMAKE_CXX_FLAGS:STRING=" /wd4244 /wd4530 /wd4819 "
 
 msbuild %srcRoot%\build\pyilmbase.sln /t:Rebuild /p:Configuration=Release;Platform=%ARCH%
 msbuild   %srcRoot%\build\INSTALL.vcxproj /p:Configuration=Release;Platform=%ARCH%

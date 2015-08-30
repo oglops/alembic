@@ -25,7 +25,7 @@ set LOCAL_ROOT=c:\localx
 set ALEMBIC_OUT=%LOCAL_ROOT%
 
 :: this is where alembic will be installed
-set ALEMBIC_INSTALL_PREFIX=%LOCAL_ROOT%/alembic-1.5.8
+set ALEMBIC_INSTALL_PREFIX=%LOCAL_ROOT%
 
 set "MAYA_ROOT=C:\Program Files\Autodesk\Maya2016"
 
