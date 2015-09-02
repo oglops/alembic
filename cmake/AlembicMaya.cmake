@@ -32,7 +32,8 @@
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
 ##-*****************************************************************************
-
+message("========================= in AlembicMaya.cmake =========================")
+message("MAYA_ROOT:${MAYA_ROOT}")
 # If MAYA_ROOT not set, use predefined paths
 IF(NOT DEFINED MAYA_ROOT)
   IF ( ${CMAKE_HOST_UNIX} )
@@ -47,7 +48,8 @@ IF(NOT DEFINED MAYA_ROOT)
     ENDIF()
   ELSE()
     IF ( ${WINDOWS} )
-      SET( ALEMBIC_MAYA_ROOT "C:/Program Files/Autodesk/Maya2012" )
+      SET( ALEMBIC_MAYA_ROOT "C:/Program Files/Autodesk/Maya2016" )
+      message("===================== xxxxxxxxxxxxxxxxxx ========================")
     ELSE()
       SET( ALEMBIC_MAYA_ROOT NOTFOUND )
     ENDIF()

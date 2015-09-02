@@ -1261,7 +1261,7 @@ def runCMake( opts, srcdir, ranBootstrap = False ):
         # don't output anything; we're just running to get some values in the
         # cmakecache for later.
         Popen( cmake_cmd, shell=True, stdout=PIPE, stdin=PIPE,
-               stderr=PIPE ).wait()
+               stderr=PIPE ).communicate()
 
     return cmake_cmd
 

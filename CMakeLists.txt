@@ -64,13 +64,13 @@ OPTION(USE_ARNOLD "Include Arnold stuff" OFF)
 OPTION(USE_EXAMPLES "Include examples" OFF)
 OPTION(USE_HDF5 "Include HDF5 stuff" ON)
 OPTION(USE_MAYA "Include Maya stuff" OFF)
-OPTION(USE_OPENGL "Include AbcOpenGL lib" OFF)
+OPTION(USE_OPENGL "Include AbcOpenGL lib" on)
 OPTION(USE_PRMAN "Include PRMan stuff" OFF)
 OPTION(USE_PYALEMBIC "Include PyAlembic stuff" ON)
 OPTION(USE_STATIC_BOOST "Build with static Boost libs" OFF)
 OPTION(USE_STATIC_HDF5 "Build with static HDF5 libs" ON)
 OPTION(USE_TESTS "Include Alembic tests" ON)
-OPTION(ALEMBIC_GLEW_LINK_STATIC "GLEW is a static library" OFF)
+OPTION(ALEMBIC_GLEW_LINK_STATIC "GLEW is a static library" on)
 OPTION(ALEMBIC_ILMBASE_LINK_STATIC "IlmBase is a static library" on)
 OPTION(ALEMBIC_SHARED_LIBS "Build shared libraries" ON)
 # if turn off this, boost/get_pointer.hpp(42): error C2995: 'T *boost::get_pointer(const std::shared_ptr<_Ty> &)' : function template has already been defined
@@ -239,6 +239,14 @@ INCLUDE_DIRECTORIES(${ALEMBIC_ILMBASE_INCLUDE_DIRECTORY})
 
 # OpenGL
 IF (USE_OPENGL)
+
+    # add glut and glew dirs
+    set (GLUT_INCLUDE_DIR "$ENV{LOCAL_ROOT}/$ENV{GLUT_VER}/include")
+    set (GLUT_glut_LIBRARY "$ENV{LOCAL_ROOT}/$ENV{GLUT_VER}/lib/x64/freeglut.lib")
+
+    set (GLEW_INCLUDE_DIR "$ENV{LOCAL_ROOT}/$ENV{GLEW_VER}/include")
+    set (GLEW_LIBRARY "$ENV{LOCAL_ROOT}/$ENV{GLEW_VER}/lib/Release/x64/glew32.lib")
+
     FIND_PACKAGE(OpenGL REQUIRED)
     FIND_PACKAGE(GLUT REQUIRED)
     FIND_PACKAGE(GLEW REQUIRED)
@@ -334,8 +342,10 @@ IF (USE_ARNOLD)
     ENDIF()
 ENDIF()
 
+
 # Maya
 IF (USE_MAYA)
+    set(MAYA_ROOT "$ENV{MAYA_ROOT}")
     INCLUDE("./cmake/AlembicMaya.cmake")
     IF (MAYA_FOUND)
         MESSAGE(STATUS "Building Maya plugins")

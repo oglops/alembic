@@ -20,12 +20,12 @@ if /i "%1" == "db:" (
 ::set rootOut=%ALEMBIC_OUT%
 ::set platOut=%rootOut%\%SYS%
 
-set BOOST_ROOT=%rootOut%\boost
-set ILMBASE_ROOT=%platOut%\IlmBase
-set OPENEXR_ROOT=%ALEMBIC_ROOT%\contrib\openexr-1.6.1
+::set BOOST_ROOT=%rootOut%\boost
+::set ILMBASE_ROOT=%platOut%\IlmBase
+::set OPENEXR_ROOT=%ALEMBIC_ROOT%\contrib\openexr-1.6.1
 
-set HDF5_ROOT=%ALEMBIC_ROOT%\contrib\hdf5-1.8.9\src
-set MAYA_ROOT=%ALEMBIC_ROOT%\contrib\maya2011
+::set HDF5_ROOT=%ALEMBIC_ROOT%\contrib\hdf5-1.8.9\src
+::set MAYA_ROOT=%ALEMBIC_ROOT%\contrib\maya2011
 
 REM ******************************************************************************************
 REM We always use the MT libraries, so comment out the next line if you want MTd libs for debug
@@ -55,9 +55,12 @@ IF NOT "_%ILMBASE_LIB_SUFFIX%_"=="__" (
 
 set ILM_ARGS=--ilmbase_include_dir=%ALEMBIC_OUT%\%ILMBASE_VER%\include\OpenEXR --ilmbase_imath_library=%ALEMBIC_OUT%\%ILMBASE_VER%\lib\Imath%IMATHLIB_SUFFIX%.lib --pyilmbase_include_dir=%ALEMBIC_OUT%\%PYILMBASE_VER%\include --pyilmbase_pyimath_library=%ALEMBIC_OUT%\%PYILMBASE_VER%\lib\PyImath.lib --pyilmbase_pyimath_module=%ALEMBIC_OUT%\%PYILMBASE_VER%\lib\python2.7\site-packages\imathmodule.lib 
 
-set BOOST_ARGS=--boost_include_dir=%LOCAL_ROOT%\%BOOST_VER% --boost_thread_library=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%\libboost_thread-%BOOST_VC_VER%-mt-%BOOST_VER_NUM%.lib --boost_python_library=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%\libboost_python-%BOOST_VC_VER%-mt-%BOOST_VER_NUM%.lib
+set BOOST_ARGS=--boost_include_dir=%LOCAL_ROOT%\%BOOST_VER% --boost_thread_library=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%\boost_thread-%BOOST_VC_VER%-mt-%BOOST_VER_NUM%.lib --boost_python_library=%LOCAL_ROOT%\%BOOST_VER%\%BOOST_LIB_VER%\boost_python-%BOOST_VC_VER%-mt-%BOOST_VER_NUM%.lib
 
 set ZLIB_ARGS=--zlib_include_dir=%ALEMBIC_OUT%\%ZLIB_VER%\include --zlib_library=%ALEMBIC_OUT%\%ZLIB_VER%\lib\zlib.lib
+
+:: additional args such as --with-maya --with-prman --with-arnold
+set ADDITIONAL_ARGS=--with-maya="%MAYA_ROOT%"
 
 :: set alembic_build folder in the same level as ALEMBIC_ROOT
 for %%i in ("%ALEMBIC_ROOT%\..") do set "folder=%%~fi"
@@ -73,7 +76,7 @@ set ILMBASE_ROOT=%LOCAL_ROOT%\%ILMBASE_VER%
 
 pushd %ALEMBIC_ROOT%
 rmdir /S /Q %ALEMBIC_BUILD_DIR% 
-python %ALEMBIC_ROOT%\build\bootstrap\alembic_bootstrap.py %BASE_ARGS% %HDF_ARGS% %ILM_ARGS% %BOOST_ARGS% %ZLIB_ARGS% --cflags="%ccflags%" --cxxflags="%cppflags%" %ALEMBIC_BUILD_DIR% 
+python %ALEMBIC_ROOT%\build\bootstrap\alembic_bootstrap.py %BASE_ARGS% %HDF_ARGS% %ILM_ARGS% %BOOST_ARGS% %ZLIB_ARGS% %ADDITIONAL_ARGS% --cflags="%ccflags%" --cxxflags="%cppflags%" %ALEMBIC_BUILD_DIR% 
 
 ::python %ALEMBIC_ROOT%\build\bootstrap\alembic_bootstrap.py %BASE_ARGS% %HDF_ARGS% %ILM_ARGS% %BOOST_ARGS% %ZLIB_ARGS% %ALEMBIC_BUILD_DIR% 
 
