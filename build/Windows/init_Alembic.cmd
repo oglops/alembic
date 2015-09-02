@@ -60,7 +60,7 @@ set BOOST_ARGS=--boost_include_dir=%LOCAL_ROOT%\%BOOST_VER% --boost_thread_libra
 set ZLIB_ARGS=--zlib_include_dir=%ALEMBIC_OUT%\%ZLIB_VER%\include --zlib_library=%ALEMBIC_OUT%\%ZLIB_VER%\lib\zlib.lib
 
 :: additional args such as --with-maya --with-prman --with-arnold
-set ADDITIONAL_ARGS=--with-maya="%MAYA_ROOT%"
+set ADDITIONAL_ARGS="" ::--with-maya="%MAYA_ROOT%"
 
 :: set alembic_build folder in the same level as ALEMBIC_ROOT
 for %%i in ("%ALEMBIC_ROOT%\..") do set "folder=%%~fi"

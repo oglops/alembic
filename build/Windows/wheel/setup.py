@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-import os
+import os,sys
 
 here = path.abspath(path.dirname(__file__))
 
@@ -28,12 +28,14 @@ alembic_lib_dir=os.path.join(alembic_out_dir,os.environ['ALEMBIC_VER'],'lib')
 
 data_files=[os.path.join(pyilmbbase_lib_dir,'PyIex.dll'),
             os.path.join(pyilmbbase_lib_dir,'PyImath.dll'),
-            os.path.join(pyilmbbase_lib_dir,'iex.pyd'),
-            os.path.join(pyilmbbase_lib_dir,'imath.pyd'),
-            os.path.join(pyilmbbase_lib_dir,'imathnumpy.pyd'),
+            os.path.join(pyilmbbase_module_dir,'iex.pyd'),
+            os.path.join(pyilmbbase_module_dir,'imath.pyd'),
+            os.path.join(pyilmbbase_module_dir,'imathnumpy.pyd'),
             os.path.join(boost_lib_dir,'boost_python-vc110-mt-1_55.dll'),
             os.path.join(alembic_lib_dir,'alembic.pyd'),
             os.path.join(alembic_lib_dir,'alembicgl.pyd'),
+            os.path.join(alembic_lib_dir,'Alembic.dll'),
+            os.path.join(alembic_lib_dir,'AlembicAbcOpenGL.dll'),
             ]
 
 setup(
