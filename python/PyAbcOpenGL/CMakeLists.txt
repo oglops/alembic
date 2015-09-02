@@ -63,7 +63,8 @@ IF (${CMAKE_HOST_UNIX})
 ELSE()
     SET(LIBPYTHON_FILE "${LIBPYTHON}.dll")
     IF (${WINDOWS})
-        SET(ALEMBIC_PYTHON_ROOT "C:/Python${LIBPYTHON_VERSION}/libs")
+        #SET(ALEMBIC_PYTHON_ROOT "C:/Python${LIBPYTHON_VERSION}/libs")
+        set(ALEMBIC_PYTHON_ROOT "$ENV{PYTHON_ROOT}/libs")
     ELSE()
         SET(ALEMBIC_PYTHON_ROOT NOTFOUND)
     ENDIF()
@@ -96,16 +97,35 @@ IF (Boost_PYTHON_LIBRARY AND ALEMBIC_PYTHON_LIBRARY)
                  ${ALEMBIC_PYILMBASE_PYIMATH_LIB}
   )
 
+  if (USE_OPENGL)
+    link_libraries(${GLUT_glut_LIBRARY})
+  endif()
+
+  # add python and glew 
   INCLUDE_DIRECTORIES("/usr/include/python${LIBPYTHON_VERSION}" "${ALEMBIC_SOURCE_DIR}/lib"
-      "${ALEMBIC_SOURCE_DIR}/python/PyAbcOpenGL")
+      "${ALEMBIC_SOURCE_DIR}/python/PyAbcOpenGL"
+      "$ENV{PYTHON_ROOT}/include"
+      ${GLUT_INCLUDE_DIR}
+      ${GLEW_INCLUDE_DIR}
+      )
+
+  message("========================= in PyAbcOpenGL/CMakeLists.txt =========================")
 
   ADD_LIBRARY(alembicglmodule SHARED ${CPP_FILES})
 
+  # add AlembicAbcOpenGL.lib to linker input
+  target_link_libraries(alembicglmodule AlembicAbcOpenGL)
+  #add_dependencies(alembicglmodule AlembicAbcOpenGL)
+
   # to get rid of the "lib" prefix from cmake
-  SET_TARGET_PROPERTIES(alembicglmodule PROPERTIES PREFIX "")
+  SET_TARGET_PROPERTIES(alembicglmodule PROPERTIES PREFIX ""
+                        OUTPUT_NAME "alembicgl"
+                        SUFFIX ".pyd")
 
   INSTALL(TARGETS alembicglmodule
-          LIBRARY DESTINATION lib)
+          ARCHIVE DESTINATION lib
+          LIBRARY DESTINATION lib
+          RUNTIME DESTINATION lib)
 
 ELSE()
     MESSAGE( FATAL_ERROR "Unable to find Python libs" )

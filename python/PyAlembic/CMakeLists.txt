@@ -184,7 +184,9 @@ IF (Boost_PYTHON_LIBRARY AND ALEMBIC_PYTHON_LIBRARY)
     ADD_LIBRARY(alembicmodule SHARED ${CPP_FILES})
 
     # to get rid of the "lib" prefix from cmake
-    SET_TARGET_PROPERTIES(alembicmodule PROPERTIES PREFIX "")
+    SET_TARGET_PROPERTIES(alembicmodule PROPERTIES PREFIX ""
+                          OUTPUT_NAME "alembic"
+                          SUFFIX ".pyd")
 
     INSTALL(TARGETS alembicmodule
            ARCHIVE DESTINATION lib

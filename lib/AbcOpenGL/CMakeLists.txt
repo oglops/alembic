@@ -34,8 +34,16 @@
 ##
 ##-*****************************************************************************
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib ${PROJECT_BINARY_DIR}/lib)
+INCLUDE_DIRECTORIES(
+                    ${GLUT_INCLUDE_DIR}
+                    ${GLEW_INCLUDE_DIR}
+                    $ENV{LOCAL_ROOT}/extra/include
+                    ${CMAKE_SOURCE_DIR}/lib ${PROJECT_BINARY_DIR}/lib
+                    )
 
+message("========================= in AbcOpenGL/CMakeLists.txt =========================")
+message("GLUT_INCLUDE_DIR:${GLUT_INCLUDE_DIR}")
+message("GLEW_INCLUDE_DIR:${GLEW_INCLUDE_DIR}")
 
 SET(H_FILES
     DrawContext.h
@@ -75,6 +83,8 @@ SET(THIS_LIBS ${CORE_LIBS} ${ALEMBIC_GL_LIBS})
 
 ADD_LIBRARY(AlembicAbcOpenGL ${LIB_TYPE} ${SOURCE_FILES})
 TARGET_LINK_LIBRARIES(AlembicAbcOpenGL ${THIS_LIBS})
+
+message("THIS_LIBS:${THIS_LIBS}")
 
 IF(ALEMBIC_SHARED_LIBS)
   SET_TARGET_PROPERTIES(AlembicAbcOpenGL 
