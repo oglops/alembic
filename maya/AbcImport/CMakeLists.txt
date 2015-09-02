@@ -34,6 +34,8 @@
 ##
 ##-*****************************************************************************
 
+add_definitions(-DALEMBIC_EXPORTS)
+
 SET(H_FILES
     AbcImport.h
     AlembicImportFileTranslator.h

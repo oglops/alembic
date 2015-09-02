@@ -34,6 +34,8 @@
 ##
 ##-*****************************************************************************
 
+add_definitions(-DALEMBIC_EXPORTS)
+
 SET(H_FILES
     AbcExport.h
     AbcWriteJob.h
