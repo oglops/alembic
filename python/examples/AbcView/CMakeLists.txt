@@ -32,9 +32,21 @@
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
 ##-*****************************************************************************
+message("========================= in python/examples/AbcView/CMakeLists.txt =========================")
+
+message("Boost_PYTHON_LIBRARY: ${Boost_PYTHON_LIBRARY}")
+message("ALEMBIC_ILMBASE_IMATH_LIB: ${ALEMBIC_ILMBASE_IMATH_LIB}")
+# Boost_PYTHON_LIBRARY = optimized;c:/local/boost_1_55_0/lib64-msvc-11.0/boost_python-vc110-mt-1_55.lib;debug;c:/local/boost_1_55_0/lib64-msvc-11.0/boost_python-vc110-mt-gd-1_55.lib
+list(GET ${Boost_PYTHON_LIBRARY} 1 Boost_PYTHON_LIBRARY)
 
 GET_FILENAME_COMPONENT(BOOST_LIBRARY_DIR ${Boost_PYTHON_LIBRARY} PATH)
 GET_FILENAME_COMPONENT(ILMBASE_LIBRARY_DIR ${ALEMBIC_ILMBASE_IMATH_LIB} PATH)
+set (GLEW_INCLUDE_DIR "$ENV{LOCAL_ROOT}/$ENV{GLEW_VER}/include")
+
+# add pthread getopt unistd header files
+include_directories("$ENV{LOCAL_ROOT}/extra/include" "$ENV{LOCAL_ROOT}/$ENV{GLEW_VER}/include")
+link_directories("$ENV{LOCAL_ROOT}/extra/lib")
+
 
 CONFIGURE_FILE(
     "${CMAKE_CURRENT_SOURCE_DIR}/abcview.in"

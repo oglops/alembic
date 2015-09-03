@@ -61,7 +61,7 @@ SET(VERSION ${PROJECT_VERSION})
 #-******************************************************************************
 
 OPTION(USE_ARNOLD "Include Arnold stuff" OFF)
-OPTION(USE_EXAMPLES "Include examples" OFF)
+OPTION(USE_EXAMPLES "Include examples" on)
 OPTION(USE_HDF5 "Include HDF5 stuff" ON)
 OPTION(USE_MAYA "Include Maya stuff" OFF)
 OPTION(USE_OPENGL "Include AbcOpenGL lib" on)
