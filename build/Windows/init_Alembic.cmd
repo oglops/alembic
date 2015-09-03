@@ -60,7 +60,9 @@ set BOOST_ARGS=--boost_include_dir=%LOCAL_ROOT%\%BOOST_VER% --boost_thread_libra
 set ZLIB_ARGS=--zlib_include_dir=%ALEMBIC_OUT%\%ZLIB_VER%\include --zlib_library=%ALEMBIC_OUT%\%ZLIB_VER%\lib\zlib.lib
 
 :: additional args such as --with-maya --with-prman --with-arnold
-set ADDITIONAL_ARGS="" ::--with-maya="%MAYA_ROOT%"
+::set "ADDITIONAL_ARGS=--with-maya=^"%MAYA_ROOT%^""
+::set "ADDITIONAL_ARGS=" 
+
 
 :: set alembic_build folder in the same level as ALEMBIC_ROOT
 for %%i in ("%ALEMBIC_ROOT%\..") do set "folder=%%~fi"
@@ -78,8 +80,6 @@ pushd %ALEMBIC_ROOT%
 rmdir /S /Q %ALEMBIC_BUILD_DIR% 
 python %ALEMBIC_ROOT%\build\bootstrap\alembic_bootstrap.py %BASE_ARGS% %HDF_ARGS% %ILM_ARGS% %BOOST_ARGS% %ZLIB_ARGS% %ADDITIONAL_ARGS% --cflags="%ccflags%" --cxxflags="%cppflags%" %ALEMBIC_BUILD_DIR% 
 
-::python %ALEMBIC_ROOT%\build\bootstrap\alembic_bootstrap.py %BASE_ARGS% %HDF_ARGS% %ILM_ARGS% %BOOST_ARGS% %ZLIB_ARGS% %ALEMBIC_BUILD_DIR% 
-
 popd
 
 
@@ -88,8 +88,8 @@ popd
 ::--zlib_include_dir=D:\xx\include --zlib_library=D:\xx\lib\zlibwapi.lib 
 
 ::--boost_include_dir=C:\local\boost_1_55_0  
-::--boost_thread_library=C:\local\boost_1_55_0\lib64-msvc-11.0\libboost_thread-vc110-mt-1_55.lib 
-::--boost_python_library=C:\local\boost_1_55_0\lib64-msvc-11.0\libboost_python-vc110-mt-1_55.lib 
+::--boost_thread_library=C:\local\boost_1_55_0\lib64-msvc-11.0\boost_thread-vc110-mt-1_55.lib 
+::--boost_python_library=C:\local\boost_1_55_0\lib64-msvc-11.0\boost_python-vc110-mt-1_55.lib 
 
 ::--generator="Visual Studio 11 Win64" 
 
