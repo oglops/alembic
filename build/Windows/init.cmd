@@ -26,7 +26,7 @@ set PYTHON_ROOT=c:\python27
 
 
 :: include and lib for dependencies such as boost and hdf and extra header files
-set LOCAL_ROOT=c:\localx
+set LOCAL_ROOT=c:\local
 
 set ALEMBIC_OUT=%LOCAL_ROOT%
 
