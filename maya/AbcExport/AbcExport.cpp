@@ -36,11 +36,13 @@
 
 #include "AbcExport.h"
 #include "AbcWriteJob.h"
+#include "Export.h"
 #include "MayaUtility.h"
 
 #include <maya/MFnPlugin.h>
 #include <maya/MFileObject.h>
 #include <maya/MItDependencyNodes.h>
+#include <fstream>
 
 namespace AbcA = Alembic::AbcCoreAbstract;
 
@@ -280,7 +282,7 @@ try
                     MGlobal::displayError("File incorrectly specified.");
                     return MS::kFailure;
                 }
-                fileName = jobArgsArray[++i].asUTF8();
+                fileName = jobArgsArray[++i].asChar();
             }
 
             else if (arg == "-fr" || arg == "-framerange")
@@ -326,6 +328,21 @@ try
             else if (arg == "-nn" || arg == "-nonormals")
             {
                 jobArgs.noNormals = true;
+            }
+
+            else if (arg == "-uvo" || arg == "-uvsonly")
+            {
+                jobArgs.writeMeshes = true;
+                jobArgs.writeUVs= true;
+                jobArgs.writeGeometry = false;
+                jobArgs.noNormals = true;
+                jobArgs.writeCurvesGroup = false;
+                jobArgs.writeTransforms = false;
+                jobArgs.writeLocators = false;
+                jobArgs.writeParticles = false;
+                jobArgs.writeCameras = false;
+                jobArgs.writeNurbsSurfaces = false;
+                jobArgs.writeNurbsCurves = false;
             }
 
             else if (arg == "-pr" || arg == "-preroll")
@@ -400,6 +417,11 @@ try
             else if (arg == "-wv" || arg == "-writevisibility")
             {
                 jobArgs.writeVisibility = true;
+            }
+
+            else if (arg == "-as" || arg == "-autosubd")
+            {
+                jobArgs.autoSubd = true;
             }
 
             else if (arg == "-mfc" || arg == "-melperframecallback")
@@ -651,6 +673,67 @@ try
                 MGlobal::displayError(error);
                 return MS::kFailure;
             }
+
+            // check the file is used by any AlembicNode in the scene
+            MItDependencyNodes dgIter(MFn::kPluginDependNode);
+            for (; !dgIter.isDone(); dgIter.next()) {
+                MFnDependencyNode alembicNode(dgIter.thisNode());
+                if (alembicNode.typeName() != "AlembicNode") {
+                    continue;
+                }
+
+                MPlug abcFilePlug = alembicNode.findPlug("abc_File");
+                if (!abcFilePlug.isNull())
+                {
+                    MFileObject alembicFile;
+                    alembicFile.setRawFullName(abcFilePlug.asString());
+                    if (alembicFile.exists())
+                    {
+                        if (alembicFile.resolvedFullName() == absoluteFile.resolvedFullName())
+                        {
+                            MString error = "Can't export to an Alembic file which is in use: ";
+                            error += absoluteFile.resolvedFullName();
+                            MGlobal::displayError(error);
+                            return MS::kFailure;
+                        }
+                    }
+                }
+
+                MPlug abcLayerFilePlug = alembicNode.findPlug("abc_layerFiles");
+                if (!abcLayerFilePlug.isNull())
+                {
+                    MFnStringArrayData fnSAD( abcLayerFilePlug.asMObject() );
+                    MStringArray layerFilenames = fnSAD.array();
+
+                    for( unsigned int l = 0; l < layerFilenames.length(); l++ )
+                    {
+                        MFileObject thisAlembicFile;
+                        thisAlembicFile.setRawFullName(abcFilePlug.asString());
+
+                        if (!thisAlembicFile.exists())
+                        {
+                            continue;
+                        }
+
+                        if (thisAlembicFile.resolvedFullName() == absoluteFile.resolvedFullName())
+                        {
+                            MString error = "Can't export to an Alembic file which is in use: ";
+                            error += absoluteFile.resolvedFullName();
+                            MGlobal::displayError(error);
+                            return MS::kFailure;
+                        }
+                    }
+                }
+
+            }
+
+            std::ofstream ofs(fileName.c_str());
+            if (!ofs.is_open()) {
+                MString error = MString("Can't write to file: ") + fileName.c_str();
+                MGlobal::displayError(error);
+                return MS::kFailure;
+            }
+            ofs.close();
         }
 
         // if -frameRelativeSample argument is not specified for a frame range,
@@ -1063,7 +1146,7 @@ catch (std::exception & e)
 
 
 
-ALEMBIC_EXPORT  MStatus initializePlugin(MObject obj)
+ALEMBIC_MAYA_PLUGIN_EXPORT  MStatus initializePlugin(MObject obj)
 {
     MStatus status;
     MFnPlugin plugin(obj, "Alembic", ABCEXPORT_VERSION, "Any");
@@ -1086,7 +1169,7 @@ ALEMBIC_EXPORT  MStatus initializePlugin(MObject obj)
     return status;
 }
 
-ALEMBIC_EXPORT MStatus uninitializePlugin(MObject obj)
+ALEMBIC_MAYA_PLUGIN_EXPORT MStatus uninitializePlugin(MObject obj)
 {
     MStatus status;
     MFnPlugin plugin(obj);

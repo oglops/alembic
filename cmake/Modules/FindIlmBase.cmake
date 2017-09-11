@@ -1,6 +1,6 @@
 ##-*****************************************************************************
 ##
-## Copyright (c) 2009-2011,
+## Copyright (c) 2009-2016,
 ##  Sony Pictures Imageworks Inc. and
 ##  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
 ##
@@ -113,7 +113,6 @@ IF(ILMBASE_INCLUDE_DIR)
       PATHS
         "${ILMBASE_INCLUDE_DIR}"
         "${ILMBASE_INCLUDE_DIR}/OpenEXR"
-      NO_DEFAULT_PATH
     )
 
     IF(_ilmbase_CONFIG)
@@ -153,7 +152,7 @@ FOREACH(COMPONENT ${_ilmbase_FIND_COMPONENTS})
 
   FIND_LIBRARY(ALEMBIC_ILMBASE_${UPPERCOMPONENT}_LIB
     NAMES
-      ${COMPONENT}-${_ilmbase_libs_ver} ${COMPONENT} 
+      ${COMPONENT}-${_ilmbase_libs_ver} ${COMPONENT}
     HINTS
       ${_ilmbase_SEARCH_DIRS}
     PATH_SUFFIXES
@@ -174,8 +173,8 @@ ENDIF()
 
 IF ( DEFINED USE_IEXMATH AND USE_IEXMATH )
   IF ( ${ALEMBIC_ILMBASE_IEXMATH_LIB} STREQUAL
-	  "ALEMBIC_ILMBASE_IEXMATH_LIB-NOTFOUND" )
-	MESSAGE( FATAL_ERROR "ilmbase libraries (Half, Iex, IexMath, IlmThread, Imath) not found, required" )
+    "ALEMBIC_ILMBASE_IEXMATH_LIB-NOTFOUND" )
+  MESSAGE( FATAL_ERROR "ilmbase libraries (Half, Iex, IexMath, IlmThread, Imath) not found, required" )
   ENDIF()
 ENDIF()
 
@@ -200,11 +199,3 @@ MESSAGE( STATUS "ILMTHREAD LIB: ${ALEMBIC_ILMBASE_ILMTHREAD_LIB}" )
 MESSAGE( STATUS "IMATH LIB: ${ALEMBIC_ILMBASE_IMATH_LIB}" )
 
 SET( ILMBASE_FOUND TRUE )
-SET( ALEMBIC_ILMBASE_LIBS
-       ${ALEMBIC_ILMBASE_IMATH_LIB}
-       ${ALEMBIC_ILMBASE_ILMTHREAD_LIB}
-       ${ALEMBIC_ILMBASE_IEX_LIB}
-       ${ALEMBIC_ILMBASE_IEXMATH_LIB}
-       ${ALEMBIC_ILMBASE_HALF_LIB} )
-
-

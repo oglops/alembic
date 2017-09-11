@@ -1,6 +1,6 @@
 ##-*****************************************************************************
 ##
-## Copyright (c) 2009-2011,
+## Copyright (c) 2009-2016,
 ##  Sony Pictures Imageworks Inc. and
 ##  Industrial Light & Magic, a division of Lucasfilm Entertainment Company Ltd.
 ##
@@ -33,35 +33,14 @@
 ##
 ##-*****************************************************************************
 
-IF (DEFINED LIBPYTHON_VERSION)
-    SET(PYTHON_EXECUTABLE_NAMES python${LIBPYTHON_VERSION})
-ELSE ()
-    IF (APPLE)
-        SET(PYTHON_EXECUTABLE_NAMES python2.7 python27 python2 python)
-    ELSE ()
-        SET(PYTHON_EXECUTABLE_NAMES python2.6 python26 python2 python)
-    ENDIF ()
-ENDIF ()
-
-# First the version of python
-# FIND_PACKAGE( PythonInterp 2.5.1 EXACT REQUIRED )
-# The default FindPythonInterp.cmake module is flaky, doesn't listen
-# to required or version
-FIND_PROGRAM(ALEMBIC_PYTHON_EXECUTABLE
-  NAMES ${PYTHON_EXECUTABLE_NAMES}
-  PATHS
-  [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\2.5\\InstallPath]
-  ${PYTHON_ROOT}
-  /usr/bin
-  /usr/lib/debug/usr/bin 
-  )
-IF( ${ALEMBIC_PYTHON_EXECUTABLE} STREQUAL ALEMBIC_PYTHON_EXECUTABLE-NOTFOUND )
-  MESSAGE( FATAL_ERROR "Could not find python 2.6" )
-ELSE()
-  MESSAGE( STATUS "Found Python : ${ALEMBIC_PYTHON_EXECUTABLE}" )
+FIND_PACKAGE ( PythonLibs 2 REQUIRED )
+FIND_PACKAGE ( PythonInterp 2 REQUIRED )
+IF(PYTHONLIBS_FOUND)
+    SET(ALEMBIC_PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+    SET(ALEMBIC_PYTHON_LIBRARY ${PYTHON_LIBRARIES})
 ENDIF()
 
-SET( CopyScriptFile ${ALEMBIC_SOURCE_DIR}/cmake/CopyScriptFile.py )
+SET( CopyScriptFile ${CMAKE_SOURCE_DIR}/cmake/CopyScriptFile.py )
 
 #-******************************************************************************
 # A Python Script just needs to be copied to the same directory in the
@@ -125,14 +104,14 @@ MACRO(ADD_PYTHON_MODULE ModuleFile ParentModuleName )
                       DEPENDS ${ModuleFileFullPath} )
 
   # Get the RunPythonTest script
-  SET( RunPythonTest ${ALEMBIC_SOURCE_DIR}/cmake/RunPythonTest )
+  SET( RunPythonTest ${CMAKE_SOURCE_DIR}/cmake/RunPythonTest )
 
   # Create a test name.
   SET( TestName ${ParentModuleName}/${ModuleFileNoDirectory}_TEST )
 
-  # The build root is ${ALEMBIC_BINARY_DIR}
+  # The build root is ${PROJECT_BINARY_DIR}
   ADD_TEST( NAME ${TestName}
-            COMMAND ${ALEMBIC_PYTHON_EXECUTABLE}
+            COMMAND ${PYTHON_EXECUTABLE}
                     ${OutputFile} ${ARGN} )
   # These tests don't always return something other than zero when they
   # fail. They do print:
@@ -163,7 +142,7 @@ MACRO(ADD_PYTHON_EXIT0_SCRIPT_TEST PythonScript)
   GET_FILENAME_COMPONENT( PythonScriptFullPath ${PythonScript} ABSOLUTE )
 
   # Get the RunPythonTest script
-  SET( RunPythonTest ${ALEMBIC_SOURCE_DIR}/cmake/RunPythonTest )
+  SET( RunPythonTest ${CMAKE_SOURCE_DIR}/cmake/RunPythonTest )
 
   # Fiddle with the Test Name. We expect exit0 scripts to end with
   STRING( REGEX MATCH "_Test$" RegexOutput ${PythonScriptNoDirectory} )
@@ -173,8 +152,8 @@ MACRO(ADD_PYTHON_EXIT0_SCRIPT_TEST PythonScript)
     SET( TestName ${PythonScriptNoDirectory}_TEST )
   ENDIF()
 
-  # The build root is just ${ALEMBIC_BINARY_DIR}
+  # The build root is just ${PROJECT_BINARY_DIR}
   ADD_TEST( NAME ${TestName}
-            COMMAND ${RunPythonTest} ${ALEMBIC_BINARY_DIR}
+            COMMAND ${RunPythonTest} ${PROJECT_BINARY_DIR}
                     ${PythonScriptFullPath} ${ARGN} )
 ENDMACRO(ADD_PYTHON_EXIT0_SCRIPT_TEST)

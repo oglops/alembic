@@ -116,26 +116,12 @@ ELSE()
     FIND_PATH(ALEMBIC_PYILMBASE_INCLUDE_DIRECTORY PyImath.h
               PATHS
               ${INCLUDE_PATHS}
-              NO_DEFAULT_PATH
-              NO_CMAKE_ENVIRONMENT_PATH
-              NO_CMAKE_PATH
-              NO_SYSTEM_ENVIRONMENT_PATH
-              NO_CMAKE_SYSTEM_PATH
               DOC "The directory where PyImath.h resides")
 
     IF(NOT DEFINED ALEMBIC_PYILMBASE_PYIMATH_LIB)
         FIND_LIBRARY(ALEMBIC_PYILMBASE_PYIMATH_LIB PyImath
                      PATHS
                      ${LIBRARY_PATHS}
-                     NO_DEFAULT_PATH
-                     NO_CMAKE_ENVIRONMENT_PATH
-                     NO_CMAKE_PATH
-                     NO_SYSTEM_ENVIRONMENT_PATH
-                     NO_CMAKE_SYSTEM_PATH
-                     DOC "The PyImath library")
-    ENDIF()
-
-    IF(NOT DEFINED ALEMBIC_PYILMBASE_PYIMATH_MODULE)
       IF(WIN32)
         FIND_LIBRARY(ALEMBIC_PYILMBASE_PYIMATH_MODULE imathmodule.lib
                      PATHS
@@ -147,14 +133,6 @@ ELSE()
                      NO_CMAKE_SYSTEM_PATH
                      DOC "The PyImath library")
       ELSE()
-        FIND_LIBRARY(ALEMBIC_PYILMBASE_PYIMATH_MODULE imathmodule.so
-                     PATHS
-                     ${LIBRARY_PATHS}
-                     NO_DEFAULT_PATH
-                     NO_CMAKE_ENVIRONMENT_PATH
-                     NO_CMAKE_PATH
-                     NO_SYSTEM_ENVIRONMENT_PATH
-                     NO_CMAKE_SYSTEM_PATH
                      DOC "The PyImath library")
       ENDIF()
     ENDIF()
@@ -171,13 +149,17 @@ ELSE()
         SET(PYILMBASE_FOUND FALSE)
     ENDIF()
 
+    FIND_PATH(ALEMBIC_PYIMATH_MODULE_DIRECTORY imathmodule.so
+        PATHS
+        ${LIBRARY_PATHS}
+        /usr/local/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages
+        ${ALEMBIC_PYILMBASE_ROOT}/lib64/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages
+        DOC "The imathmodule.so module directory"
+    )
+
     MESSAGE(STATUS "PYILMBASE INCLUDE PATH: ${ALEMBIC_PYILMBASE_INCLUDE_DIRECTORY}")
     MESSAGE(STATUS "PYIMATH LIB: ${ALEMBIC_PYILMBASE_PYIMATH_LIB}")
-    MESSAGE(STATUS "PYIMATH MODULE: ${ALEMBIC_PYILMBASE_PYIMATH_MODULE}")
-
-    SET(ALEMBIC_PYILMBASE_LIBS
-        ${ALEMBIC_PYILMBASE_PYIMATH_LIB}
-    )
+    MESSAGE(STATUS "PYIMATH MODULE: ${ALEMBIC_PYIMATH_MODULE_DIRECTORY}")
 
 ENDIF()
 

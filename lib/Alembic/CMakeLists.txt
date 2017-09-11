@@ -45,12 +45,11 @@ IF (USE_HDF5)
 ENDIF()
 ADD_SUBDIRECTORY(Abc)
 ADD_SUBDIRECTORY(AbcCoreFactory)
+ADD_SUBDIRECTORY(AbcCoreLayer)
 ADD_SUBDIRECTORY(AbcGeom)
 ADD_SUBDIRECTORY(AbcCollection)
 ADD_SUBDIRECTORY(AbcMaterial)
 ADD_SUBDIRECTORY(Ogawa)
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib ${PROJECT_BINARY_DIR}/lib)
 
 # add ilmbase lib dir
 link_directories( ${ALEMBIC_ILMBASE_ROOT}/lib )
@@ -59,8 +58,21 @@ ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES}
 					${ALEMBIC_ILMBASE_HALF_LIB}
            )
 
+TARGET_INCLUDE_DIRECTORIES(Alembic
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/lib>
+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>
+    ${ALEMBIC_ILMBASE_INCLUDE_DIRECTORY}
+    ${Boost_INCLUDE_DIRS}
+    PRIVATE
+    ${HDF5_INCLUDE_DIRS}
+    )
+
 IF (ALEMBIC_SHARED_LIBS)
-  SET_TARGET_PROPERTIES(Alembic PROPERTIES DEFINE_SYMBOL ALEMBIC_EXPORTS)
+  SET_TARGET_PROPERTIES(Alembic PROPERTIES DEFINE_SYMBOL ALEMBIC_EXPORTS
+    SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    VERSION ${PROJECT_VERSION})
 ENDIF()
 
 message("ALEMBIC_SHARED_LIBS:${ALEMBIC_SHARED_LIBS}")
@@ -73,14 +85,68 @@ message("CORE_LIBS:${CORE_LIBS}")
 message("ALEMBIC_SHARED_LIBS:${ALEMBIC_SHARED_LIBS}")
 message("ALEMBIC_ILMBASE_HALF_LIB:${ALEMBIC_ILMBASE_HALF_LIB}")
 
-# fixes undefined symbols for x86_64
-IF (ALEMBIC_SHARED_LIBS AND DARWIN)
-    TARGET_LINK_LIBRARIES(${CORE_LIBS})
-ELSEIF(ALEMBIC_SHARED_LIBS AND WIN32)
-	TARGET_LINK_LIBRARIES(${CORE_LIBS} ${ALEMBIC_ILMBASE_HALF_LIB})
+TARGET_LINK_LIBRARIES(Alembic
+    LINK_PUBLIC
+    ${ALEMBIC_ILMBASE_LIBS}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${EXTERNAL_MATH_LIBS}
+    LINK_PRIVATE
+    ${HDF5_LIBRARIES}
+  )
+
+# link in atomic if we are using tr1 and the compiler is new enough
+# to want  __atomic_compare_exchange_n
+IF ( ${ALEMBIC_LIB_USES_TR1} AND CMAKE_COMPILER_IS_GNUCXX AND
+    CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.8 )
+    TARGET_LINK_LIBRARIES( Alembic atomic )
 ENDIF()
 
 INSTALL(TARGETS Alembic
+        EXPORT AlembicTargets
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION lib)
+
+#-******************************************************************************
+# PACKAGE EXPORTS
+#-******************************************************************************
+
+CONFIGURE_FILE(AlembicConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/AlembicConfig.cmake"
+    @ONLY
+    )
+
+INCLUDE(CMakePackageConfigHelpers)
+WRITE_BASIC_PACKAGE_VERSION_FILE(
+    "${CMAKE_CURRENT_BINARY_DIR}/AlembicConfigVersion.cmake"
+    VERSION
+    ${PROJECT_VERSION}
+    COMPATIBILITY
+    AnyNewerVersion
+    )
+
+EXPORT(TARGETS
+    Alembic
+    FILE
+    "${CMAKE_CURRENT_BINARY_DIR}/AlembicTargets.cmake"
+    NAMESPACE
+    Alembic::
+    )
+
+SET(ConfigPackageLocation lib/cmake/Alembic)
+INSTALL(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/AlembicConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/AlembicConfigVersion.cmake"
+    DESTINATION
+    ${ConfigPackageLocation}
+    )
+
+INSTALL(EXPORT
+    AlembicTargets
+    FILE
+    AlembicTargets.cmake
+    NAMESPACE
+    Alembic::
+    DESTINATION
+    ${ConfigPackageLocation}
+    )

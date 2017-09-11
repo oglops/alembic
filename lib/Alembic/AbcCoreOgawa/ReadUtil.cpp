@@ -82,6 +82,11 @@ ReadDimensions( Ogawa::IDataPtr iDims,
         oDim.setRank( numRanks );
 
         std::vector< Util::uint64_t > dims( numRanks );
+        if ( dims.empty() )
+        {
+            return;
+        }
+
         iDims->read( numRanks * 8, &( dims.front() ), 0, iThreadId );
         for ( std::size_t i = 0; i < numRanks; ++i )
         {
@@ -1446,6 +1451,11 @@ ReadTimeSamplesAndMax( Ogawa::IDataPtr iData,
                        std::vector <  AbcA::index_t > & oMaxSamples )
 {
     std::vector< char > buf( iData->getSize() );
+    if ( buf.empty() )
+    {
+        return;
+    }
+
     iData->read( iData->getSize(), &( buf.front() ), 0, 0 );
     std::size_t pos = 0;
     while ( pos < buf.size() )
@@ -1501,6 +1511,11 @@ ReadObjectHeaders( Ogawa::IGroupPtr iGroup,
 
     // skip the last 32 bytes which contains the hashes
     std::vector< char > buf( data->getSize() - 32 );
+    if ( buf.empty() )
+    {
+        return;
+    }
+
     data->read( buf.size(), &( buf.front() ), 0, iThreadId );
     std::size_t pos = 0;
     while ( pos < buf.size() )
@@ -1570,32 +1585,52 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
                      const std::vector< AbcA::MetaData > & iMetaDataVec,
                      PropertyHeaderPtrs & oHeaders )
 {
+
+    // Our bitmasks look like this:
+    //
+    // Property Type mask (Scalar, Array, or Compound) 0x0003
     // 0000 0000 0000 0000 0000 0000 0000 0011
-    static const Util::uint32_t ptypeMask = 0x0003;
-
+    //
+    // Our Pod type mask 0x003c
+    // 0000 0000 0000 0000 0000 0000 0011 1100
+    //
+    // Has a time sampling index mask 0x0040
+    // 0000 0000 0000 0000 0000 0000 0100 0000
+    //
+    // no repeats mask 0x0080
+    // 0000 0000 0000 0000 0000 0000 1000 0000
+    //
+    // Extent value mask 0xff00
+    // 0000 0000 0000 0000 1111 1111 0000 0000
+    //
+    // Our bitmasks look like this:
+    //
+    // Property Type mask (Scalar, Array, or Compound) 0x0003
+    // 0000 0000 0000 0000 0000 0000 0000 0011
+    //
+    // Byte size hint for first/last non repeated sample 0x000c
     // 0000 0000 0000 0000 0000 0000 0000 1100
-    static const Util::uint32_t sizeHintMask = 0x000c;
-
+    //
+    // Our Pod type mask 0x00f0
     // 0000 0000 0000 0000 0000 0000 1111 0000
-    static const Util::uint32_t podMask = 0x00f0;
-
+    //
+    // Has a time sampling index mask 0x0100
     // 0000 0000 0000 0000 0000 0001 0000 0000
-    static const Util::uint32_t hasTsidxMask = 0x0100;
-
+    //
+    // Whether the first/last index exists mask 0x200
     // 0000 0000 0000 0000 0000 0010 0000 0000
-    static const Util::uint32_t needsFirstLastMask = 0x0200;
-
+    //
+    // Whether the size of the data changes from sample to sample mask 0x400
     // 0000 0000 0000 0000 0000 0100 0000 0000
-    static const Util::uint32_t homogenousMask = 0x400;
-
+    //
+    // Mask for whether the data is the same over all samples 0x800
     // 0000 0000 0000 0000 0000 1000 0000 0000
-    static const Util::uint32_t constantMask = 0x800;
-
+    //
+    // Extent value mask 0xff000
     // 0000 0000 0000 1111 1111 0000 0000 0000
-    static const Util::uint32_t extentMask = 0xff000;
-
+    //
+    // Meta data index mask 0xff00000
     // 0000 1111 1111 0000 0000 0000 0000 0000
-    static const Util::uint32_t metaDataIndexMask = 0xff00000;
 
     Ogawa::IDataPtr data = iGroup->getData( iIndex, iThreadId );
     ABCA_ASSERT( data, "ReadObjectHeaders Invalid data at index " << iIndex );
@@ -1616,7 +1651,7 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
         Util::uint32_t info =  *( (Util::uint32_t *)( &buf[pos] ) );
         pos += 4;
 
-        Util::uint32_t ptype = info & ptypeMask;
+        Util::uint32_t ptype = info & 0x0003;
         header->isScalarLike = ptype & 1;
         if ( ptype == 0 )
         {
@@ -1631,13 +1666,13 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
             header->header.setPropertyType( AbcA::kArrayProperty );
         }
 
-        Util::uint32_t sizeHint = ( info & sizeHintMask ) >> 2;
+        Util::uint32_t sizeHint = ( info & 0x000c ) >> 2;
 
         // if we aren't a compound we may need to do a bunch of other work
         if ( !header->header.isCompound() )
         {
             // Read the pod type out of bits 4-7
-            char podt = ( char )( ( info & podMask ) >> 4 );
+            char podt = ( char )( ( info &  0x00f0 ) >> 4 );
             if ( podt != ( char )Alembic::Util::kBooleanPOD &&
                  podt != ( char )Alembic::Util::kUint8POD &&
                  podt != ( char )Alembic::Util::kInt8POD &&
@@ -1657,15 +1692,15 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
                     "Read invalid POD type: " << ( Util::int32_t )podt );
             }
 
-            Util::uint8_t extent = ( info & extentMask ) >> 12;
+            Util::uint8_t extent = ( info & 0xff000 ) >> 12;
             header->header.setDataType( AbcA::DataType(
                 ( Util::PlainOldDataType ) podt, extent ) );
 
-            header->isHomogenous = ( info & homogenousMask ) != 0;
+            header->isHomogenous = ( info & 0x400 ) != 0;
 
             header->nextSampleIndex = GetUint32WithHint( buf, sizeHint, pos );
 
-            if ( ( info & needsFirstLastMask ) != 0 )
+            if ( ( info & 0x0200 ) != 0 )
             {
                 header->firstChangedIndex =
                     GetUint32WithHint( buf, sizeHint, pos );
@@ -1673,7 +1708,7 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
                 header->lastChangedIndex =
                     GetUint32WithHint( buf, sizeHint, pos );
             }
-            else if ( ( info & constantMask ) != 0 )
+            else if ( ( info & 0x800 ) != 0 )
             {
                 header->firstChangedIndex = 0;
                 header->lastChangedIndex = 0;
@@ -1684,7 +1719,7 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
                 header->lastChangedIndex = header->nextSampleIndex - 1;
             }
 
-            if ( ( info & hasTsidxMask ) != 0 )
+            if ( ( info & 0x0100 ) != 0 )
             {
                 header->timeSamplingIndex =
                     GetUint32WithHint( buf, sizeHint, pos );
@@ -1704,7 +1739,7 @@ ReadPropertyHeaders( Ogawa::IGroupPtr iGroup,
         header->header.setName( name );
         pos += nameSize;
 
-        Util::uint32_t metaDataIndex = ( info & metaDataIndexMask ) >> 20;
+        Util::uint32_t metaDataIndex = ( info & 0xff00000 ) >> 20;
 
         if ( metaDataIndex == 0xff )
         {
@@ -1736,6 +1771,11 @@ ReadIndexedMetaData( Ogawa::IDataPtr iData,
     oMetaDataVec.push_back( AbcA::MetaData() );
 
     std::vector< char > buf( iData->getSize() );
+
+    if ( buf.empty() )
+    {
+        return;
+    }
 
     // read as part of opening the archive so threadid 0 is ok
     iData->read( iData->getSize(), &( buf.front() ), 0, 0 );
